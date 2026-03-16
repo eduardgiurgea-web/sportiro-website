@@ -107,31 +107,33 @@ const PuzzleCube = ({ rotationProgress, isMobile, mousePos, currentAlbumIndex }:
       once: true,
       onEnter: () => {
         // Animate all pieces to their target positions (forming the main cube)
+        const dur = isMobile ? 1.2 : 2.5;
+        const maxDelay = isMobile ? 0.25 : 0.5;
         children.forEach((child, i) => {
           const p = pieces[i];
           gsap.to(child.position, {
             x: p.tX,
             y: p.tY,
             z: p.tZ,
-            duration: 2.5,
+            duration: dur,
             ease: 'back.out(1.1)',
-            delay: Math.random() * 0.5 // Stagger randomly
+            delay: Math.random() * maxDelay
           });
           gsap.to(child.rotation, {
             x: 0,
             y: 0,
             z: 0,
-            duration: 2.5,
+            duration: dur,
             ease: 'power3.inOut',
-            delay: Math.random() * 0.5
+            delay: Math.random() * maxDelay
           });
           gsap.to(child.scale, {
             x: 1,
             y: 1,
             z: 1,
-            duration: 2,
+            duration: dur * 0.8,
             ease: 'back.out(1.5)',
-            delay: Math.random() * 0.5
+            delay: Math.random() * maxDelay
           });
         });
       }
@@ -219,7 +221,7 @@ const AlbumCube = () => {
     const st = ScrollTrigger.create({
       trigger: sectionRef.current,
       start: 'top top',
-      end: isMobile ? '+=200%' : '+=300%',
+      end: isMobile ? '+=150%' : '+=300%',
       scrub: 1,
       pin: true,
       onUpdate: (self) => {
@@ -324,31 +326,31 @@ const AlbumCube = () => {
         </Canvas>
       </div>
 
-      {/* Album info overlay (styled with blue blocks as requested) */}
-      <div className="absolute bottom-1/3 left-6 md:left-12 z-20 max-w-sm md:max-w-xl flex flex-col items-start gap-2">
-        <div className="bg-[#3061d4] px-3 py-1.5 inline-block shadow-md">
-          <p className="text-[10px] md:text-xs uppercase tracking-widest font-bold text-white">
+      {/* Album info overlay */}
+      <div className="absolute bottom-4 md:bottom-1/3 left-4 md:left-12 z-20 max-w-[180px] md:max-w-xl flex flex-col items-start gap-1.5 md:gap-2">
+        <div className="bg-[#3061d4] px-2 py-1 md:px-3 md:py-1.5 inline-block shadow-md">
+          <p className="text-[9px] md:text-xs uppercase tracking-widest font-bold text-white">
             SERVIZIO {String(currentAlbum.id).padStart(2, '0')} / {String(albumCubeConfig.albums.length).padStart(2, '0')}
           </p>
         </div>
 
-        <h3 className="font-serif text-4xl md:text-6xl lg:text-7xl leading-snug">
-          <span className="bg-[#3061d4] text-white px-4 py-1 box-decoration-clone leading-snug shadow-md transition-all duration-300">
+        <h3 className="font-serif text-2xl md:text-6xl lg:text-7xl leading-snug">
+          <span className="bg-[#3061d4] text-white px-2 py-0.5 md:px-4 md:py-1 box-decoration-clone leading-snug shadow-md transition-all duration-300">
             {currentAlbum.title}
           </span>
         </h3>
 
-        <div className="bg-[#3061d4] px-3 py-1.5 inline-block shadow-md mt-1">
-          <p className="text-xs md:text-sm font-semibold text-white tracking-wider uppercase">
+        <div className="bg-[#3061d4] px-2 py-1 md:px-3 md:py-1.5 inline-block shadow-md">
+          <p className="text-[10px] md:text-sm font-semibold text-white tracking-wider uppercase">
             {currentAlbum.subtitle}
           </p>
         </div>
       </div>
 
-      {/* Description — right of cube */}
-      <div className="absolute bottom-1/3 right-6 md:right-16 z-20 max-w-[200px] md:max-w-[260px]">
+      {/* Description — right of cube, hidden on mobile */}
+      <div className="hidden md:block absolute bottom-1/3 right-16 z-20 max-w-[260px]">
         <p
-          className="text-base md:text-lg leading-relaxed font-semibold transition-all duration-300"
+          className="text-lg leading-relaxed font-semibold transition-all duration-300"
           style={{ color: 'rgba(80, 70, 60, 0.9)' }}
         >
           {currentAlbum.description}

@@ -15,11 +15,11 @@ const ICON_MAP = {
 
 // Merchandise items configuration
 const MERCH_ITEMS = [
-  { src: '/Gemini_Generated_Image_mmd0gmmd0gmmd0gm.png', alt: 'Sportiro T-Shirt', size: 'w-36 h-36 md:w-52 md:h-52' },
-  { src: '/Gemini_Generated_Image_j1e0yej1e0yej1e0.png', alt: 'Sportiro Hoodie', size: 'w-40 h-40 md:w-56 md:h-56' },
-  { src: '/Gemini_Generated_Image_2kjx9d2kjx9d2kjx.png', alt: 'Sportiro Polo', size: 'w-32 h-32 md:w-48 md:h-48' },
-  { src: '/Gemini_Generated_Image_5cns1l5cns1l5cns.png', alt: 'Sportiro Cap', size: 'w-28 h-28 md:w-40 md:h-40' },
-  { src: '/Gemini_Generated_Image_k25z7ok25z7ok25z.png', alt: 'Sportiro Tote Bag', size: 'w-32 h-32 md:w-44 md:h-44' },
+  { src: '/Gemini_Generated_Image_mmd0gmmd0gmmd0gm.png', alt: 'Sportiro T-Shirt', size: 'w-16 h-16 md:w-52 md:h-52' },
+  { src: '/Gemini_Generated_Image_j1e0yej1e0yej1e0.png', alt: 'Sportiro Hoodie', size: 'w-20 h-20 md:w-56 md:h-56' },
+  { src: '/Gemini_Generated_Image_2kjx9d2kjx9d2kjx.png', alt: 'Sportiro Polo', size: 'w-16 h-16 md:w-48 md:h-48' },
+  { src: '/Gemini_Generated_Image_5cns1l5cns1l5cns.png', alt: 'Sportiro Cap', size: 'w-14 h-14 md:w-40 md:h-40' },
+  { src: '/Gemini_Generated_Image_k25z7ok25z7ok25z.png', alt: 'Sportiro Tote Bag', size: 'w-16 h-16 md:w-44 md:h-44' },
 ];
 
 // Ribbon positions for merchandise (following a diagonal flowing line, but kept away from center)
@@ -117,9 +117,10 @@ const Hero = ({ introComplete, onOpenQuestionnaire, onRequestCallback }: HeroPro
         if (!item) return;
         const pos = MERCH_POSITIONS[i];
 
+        const isMob = window.innerWidth < 768;
         gsap.to(item, {
-          x: `+=${(pos.x > 0 ? 1 : -1) * 40}`,
-          y: `-=30`,
+          x: `+=${(pos.x > 0 ? 1 : -1) * (isMob ? 10 : 40)}`,
+          y: `-=${isMob ? 10 : 30}`,
           duration: gsap.utils.random(4, 7),
           repeat: -1,
           yoyo: true,
@@ -243,7 +244,7 @@ const Hero = ({ introComplete, onOpenQuestionnaire, onRequestCallback }: HeroPro
   return (
     <section
       ref={heroRef}
-      className="relative w-full min-h-screen md:min-h-[120vh] overflow-x-hidden"
+      className="relative w-full min-h-screen md:min-h-[120vh] overflow-hidden md:overflow-x-hidden"
       style={{ backgroundColor: 'var(--warm-cream)' }}
     >
       {/* Side glow effects */}
@@ -271,15 +272,15 @@ const Hero = ({ introComplete, onOpenQuestionnaire, onRequestCallback }: HeroPro
 
 
       {/* ── MOBILE LAYOUT ── */}
-      <div className="md:hidden relative z-20 flex flex-col items-center justify-start pt-24 px-6 pb-16" style={{ minHeight: '100svh' }}>
+      <div className="md:hidden relative z-20 flex flex-col items-center justify-start pt-16 px-5 pb-12" style={{ minHeight: '100svh' }}>
         <img
           src="/backgroundnew.png"
           alt="Sportiro"
-          className="w-64 object-contain mb-6"
+          className="w-72 object-contain mb-4"
           style={{ opacity: introComplete ? 1 : 0, transition: 'opacity 0.8s ease' }}
         />
         <p
-          className="text-base max-w-xs mx-auto mb-8 leading-relaxed text-center font-semibold"
+          className="text-sm max-w-[260px] mx-auto mb-6 leading-relaxed text-center font-semibold"
           style={{
             color: '#0a1f5c',
             textShadow: '0 4px 20px rgba(255,255,255,0.9)',
@@ -290,19 +291,19 @@ const Hero = ({ introComplete, onOpenQuestionnaire, onRequestCallback }: HeroPro
           {heroConfig.subtitle}
         </p>
         <div
-          className="flex flex-col gap-4 w-full max-w-xs"
+          className="flex flex-col gap-3 w-full max-w-[260px]"
           style={{ opacity: introComplete ? 1 : 0, transition: 'opacity 0.8s ease 0.4s' }}
         >
           <button
             onClick={onOpenQuestionnaire ?? (() => scrollToSection(heroConfig.ctaPrimaryTarget))}
-            className="btn-orange-pulse flex items-center justify-center gap-3 group px-6 py-4 rounded-full text-sm font-bold uppercase tracking-widest w-full"
+            className="btn-orange-pulse flex items-center justify-center gap-2 group px-5 py-3 rounded-full text-xs font-bold uppercase tracking-widest w-full"
           >
             {heroConfig.ctaPrimary}
-            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </button>
           <button
             onClick={onRequestCallback ?? (() => scrollToSection(heroConfig.ctaSecondaryTarget))}
-            className="btn-orange-pulse flex items-center justify-center gap-3 px-6 py-4 rounded-full text-sm font-bold uppercase tracking-widest w-full"
+            className="btn-orange-pulse flex items-center justify-center gap-2 px-5 py-3 rounded-full text-xs font-bold uppercase tracking-widest w-full"
           >
             {heroConfig.ctaSecondary}
           </button>
@@ -333,30 +334,23 @@ const Hero = ({ introComplete, onOpenQuestionnaire, onRequestCallback }: HeroPro
         </div>
       </nav>
 
-      {/* Mobile Navigation */}
-      <nav className="md:hidden fixed top-4 left-4 right-4 z-50">
-        <div className="glass rounded-2xl px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <img src="/sportirologo.png" alt="Sportiro" className="w-8 h-8 object-contain" />
-            <span className="font-medium text-sm" style={{ color: 'var(--warm-dark)' }}>
-              {heroConfig.brandName}
-            </span>
-          </div>
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-2 rounded-lg hover:bg-white/50 transition-colors"
-          >
-            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </button>
-        </div>
-
+      {/* Mobile Navigation — logo icon + burger at top-right */}
+      <nav className="md:hidden fixed top-3 right-3 z-50 flex flex-col items-center gap-1">
+        <img src="/sportirologo.png" alt="Sportiro" className="w-9 h-9 object-contain drop-shadow-md" />
+        <button
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          className="p-1.5 rounded-xl bg-white/85 backdrop-blur-sm shadow-md"
+          style={{ color: 'var(--warm-dark)' }}
+        >
+          {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+        </button>
         {mobileMenuOpen && (
-          <div className="mt-2 glass rounded-2xl p-4 space-y-2">
+          <div className="mt-1 bg-white/95 backdrop-blur-sm rounded-2xl py-2 px-1 shadow-xl border border-white/50 min-w-[150px]">
             {heroConfig.navItems.map((item) => (
               <button
                 key={item.sectionId}
                 onClick={() => scrollToSection(item.sectionId)}
-                className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium uppercase tracking-wider rounded-xl hover:bg-white/50 transition-colors text-left"
+                className="w-full flex items-center px-3 py-2.5 text-xs font-semibold uppercase tracking-wider rounded-xl hover:bg-gray-50 transition-colors text-left"
                 style={{ color: 'var(--warm-dark)' }}
               >
                 {item.label}
@@ -395,10 +389,10 @@ const Hero = ({ introComplete, onOpenQuestionnaire, onRequestCallback }: HeroPro
         </div>
       )}
 
-      {/* 3D Perspective container for merchandise — desktop only */}
+      {/* 3D Perspective container for merchandise */}
       <div
         ref={merchContainerRef}
-        className="hidden md:block absolute inset-0 z-10 pointer-events-none"
+        className="absolute inset-0 z-10 pointer-events-none"
         style={{ perspective: '1200px', perspectiveOrigin: '50% 50%' }}
       >
         {MERCH_ITEMS.map((item, i) => (

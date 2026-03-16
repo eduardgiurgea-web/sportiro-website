@@ -85,21 +85,22 @@ function App() {
       {/* Floating Chat Button — opens Sofia chat */}
       <button
         onClick={openChat}
-        className="fixed bottom-6 right-6 z-[100] flex flex-col items-center justify-center p-3 rounded-2xl bg-white shadow-2xl hover:scale-105 transition-transform border border-gray-100 group cursor-pointer"
+        className="fixed bottom-4 right-3 z-[100] flex flex-col items-center justify-center p-2 md:p-3 rounded-2xl bg-white shadow-2xl hover:scale-105 transition-transform border border-gray-100 group cursor-pointer md:bottom-6 md:right-6"
       >
         <img
           src="/sportirologo.png"
-          className="w-12 h-12 object-contain"
+          className="w-8 h-8 md:w-12 md:h-12 object-contain"
           style={{ animation: 'spin 8s linear infinite' }}
           alt="Sportiro"
         />
-        <div className="flex flex-col items-center mt-1">
+        <div className="hidden md:flex flex-col items-center mt-1">
           <span className="text-[#0a1f5c] font-black text-[12px] leading-none tracking-widest">SPORTIRO</span>
           <span className="text-[#00b4ff] text-[9px] italic leading-tight tracking-wider">Print Your Brand</span>
         </div>
-        <div className="bg-[#25D366] text-white text-[10px] font-bold px-3 py-1.5 rounded-full mt-2 flex items-center gap-1.5 shadow-md group-hover:bg-[#20bd5a] transition-colors">
-          <MessageCircle className="w-3.5 h-3.5" />
-          Chat Instantaneo
+        <div className="bg-[#25D366] text-white text-[9px] md:text-[10px] font-bold px-2 py-1 md:px-3 md:py-1.5 rounded-full mt-1 md:mt-2 flex items-center gap-1 md:gap-1.5 shadow-md group-hover:bg-[#20bd5a] transition-colors">
+          <MessageCircle className="w-3 h-3 md:w-3.5 md:h-3.5" />
+          <span className="hidden md:inline">Chat Instantaneo</span>
+          <span className="md:hidden">Chat</span>
         </div>
       </button>
     </main>
