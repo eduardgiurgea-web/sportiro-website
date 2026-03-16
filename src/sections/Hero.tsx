@@ -166,6 +166,7 @@ const Hero = ({ introComplete, onOpenQuestionnaire, onRequestCallback }: HeroPro
   // Scroll-driven logo transition: center → top-left corner
   useEffect(() => {
     if (!introComplete || !heroRef.current || !logoRef.current) return;
+    if (window.innerWidth < 768) return;
 
     const st = ScrollTrigger.create({
       trigger: heroRef.current,
@@ -202,9 +203,10 @@ const Hero = ({ introComplete, onOpenQuestionnaire, onRequestCallback }: HeroPro
     return () => st.kill();
   }, [introComplete]);
 
-  // Entrance animations for logo, nav, subtitle, CTA
+  // Entrance animations for logo, nav, subtitle, CTA — desktop only
   useEffect(() => {
     if (!introComplete) return;
+    if (window.innerWidth < 768) return;
 
     const ctx = gsap.context(() => {
       // Staggered entrance: elements fade in smoothly as the intro overlay fades out
@@ -241,7 +243,7 @@ const Hero = ({ introComplete, onOpenQuestionnaire, onRequestCallback }: HeroPro
   return (
     <section
       ref={heroRef}
-      className="relative w-full min-h-[120vh] overflow-hidden"
+      className="relative w-full min-h-screen md:min-h-[120vh] overflow-x-hidden"
       style={{ backgroundColor: 'var(--warm-cream)' }}
     >
       {/* Side glow effects */}
@@ -267,6 +269,45 @@ const Hero = ({ introComplete, onOpenQuestionnaire, onRequestCallback }: HeroPro
         />
       </div>
 
+
+      {/* ── MOBILE LAYOUT ── */}
+      <div className="md:hidden relative z-20 flex flex-col items-center justify-start pt-24 px-6 pb-16" style={{ minHeight: '100svh' }}>
+        <img
+          src="/backgroundnew.png"
+          alt="Sportiro"
+          className="w-64 object-contain mb-6"
+          style={{ opacity: introComplete ? 1 : 0, transition: 'opacity 0.8s ease' }}
+        />
+        <p
+          className="text-base max-w-xs mx-auto mb-8 leading-relaxed text-center font-semibold"
+          style={{
+            color: '#0a1f5c',
+            textShadow: '0 4px 20px rgba(255,255,255,0.9)',
+            opacity: introComplete ? 1 : 0,
+            transition: 'opacity 0.8s ease 0.2s',
+          }}
+        >
+          {heroConfig.subtitle}
+        </p>
+        <div
+          className="flex flex-col gap-4 w-full max-w-xs"
+          style={{ opacity: introComplete ? 1 : 0, transition: 'opacity 0.8s ease 0.4s' }}
+        >
+          <button
+            onClick={onOpenQuestionnaire ?? (() => scrollToSection(heroConfig.ctaPrimaryTarget))}
+            className="btn-orange-pulse flex items-center justify-center gap-3 group px-6 py-4 rounded-full text-sm font-bold uppercase tracking-widest w-full"
+          >
+            {heroConfig.ctaPrimary}
+            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+          </button>
+          <button
+            onClick={onRequestCallback ?? (() => scrollToSection(heroConfig.ctaSecondaryTarget))}
+            className="btn-orange-pulse flex items-center justify-center gap-3 px-6 py-4 rounded-full text-sm font-bold uppercase tracking-widest w-full"
+          >
+            {heroConfig.ctaSecondary}
+          </button>
+        </div>
+      </div>
 
       {/* Desktop Navigation */}
       <nav
@@ -354,10 +395,10 @@ const Hero = ({ introComplete, onOpenQuestionnaire, onRequestCallback }: HeroPro
         </div>
       )}
 
-      {/* 3D Perspective container for merchandise */}
+      {/* 3D Perspective container for merchandise — desktop only */}
       <div
         ref={merchContainerRef}
-        className="absolute inset-0 z-10 pointer-events-none"
+        className="hidden md:block absolute inset-0 z-10 pointer-events-none"
         style={{ perspective: '1200px', perspectiveOrigin: '50% 50%' }}
       >
         {MERCH_ITEMS.map((item, i) => (
@@ -382,10 +423,10 @@ const Hero = ({ introComplete, onOpenQuestionnaire, onRequestCallback }: HeroPro
         ))}
       </div>
 
-      {/* Logo lockup — hidden until intro ends, then GSAP fades it in centered at 35% */}
+      {/* Logo lockup — desktop only (GSAP animated) */}
       <div
         ref={logoRef}
-        className="absolute z-20"
+        className="hidden md:block absolute z-20"
         style={{
           left: '50%',
           top: '20%',
@@ -400,9 +441,9 @@ const Hero = ({ introComplete, onOpenQuestionnaire, onRequestCallback }: HeroPro
         />
       </div>
 
-      {/* Subtitle + CTA — positioned in the lower half, connected to logo visually */}
+      {/* Subtitle + CTA — desktop only (GSAP animated) */}
       <div
-        className="absolute left-0 right-0 z-20 flex flex-col items-center px-6"
+        className="hidden md:flex absolute left-0 right-0 z-20 flex-col items-center px-6"
         style={{ top: '42%' }}
       >
         <p

@@ -9,6 +9,9 @@ export const useLenis = () => {
   const lenisRef = useRef<Lenis | null>(null);
 
   useEffect(() => {
+    // Skip Lenis on mobile/touch — native scroll is smoother
+    if (window.innerWidth < 768) return;
+
     // Initialize Lenis with smooth scrolling
     const lenis = new Lenis({
       duration: 1.2,
