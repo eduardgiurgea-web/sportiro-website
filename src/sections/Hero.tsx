@@ -257,7 +257,7 @@ const Hero = ({ introComplete, onOpenQuestionnaire, onRequestCallback }: HeroPro
   return (
     <section
       ref={heroRef}
-      className="relative w-full min-h-[85vh] md:min-h-[120vh] overflow-hidden"
+      className="relative w-full min-h-[100svh] md:min-h-[120vh] overflow-hidden"
       style={{ backgroundColor: 'var(--warm-cream)' }}
     >
       {/* Side glow effects */}
@@ -285,15 +285,15 @@ const Hero = ({ introComplete, onOpenQuestionnaire, onRequestCallback }: HeroPro
 
 
       {/* ── MOBILE LAYOUT ── */}
-      <div className="md:hidden relative z-20 flex flex-col items-center justify-start pt-28 px-5 pb-8" style={{ minHeight: '85vh' }}>
+      <div className="md:hidden relative z-20 flex flex-col items-center justify-center pt-20 px-5 pb-6" style={{ minHeight: '100svh' }}>
         <img
           src="/backgroundnew.png"
           alt="Sportiro"
-          className="w-full max-w-[280px] object-contain relative z-10"
-          style={{ 
-            opacity: introComplete ? 1 : 0, 
+          className="w-full max-w-[240px] object-contain relative z-10"
+          style={{
+            opacity: introComplete ? 1 : 0,
             transition: 'opacity 0.8s ease',
-            marginBottom: '5px'
+            marginBottom: '4px'
           }}
         />
         <p
@@ -303,7 +303,7 @@ const Hero = ({ introComplete, onOpenQuestionnaire, onRequestCallback }: HeroPro
             textShadow: '0 2px 10px rgba(255,255,255,0.8)',
             opacity: introComplete ? 1 : 0,
             transition: 'opacity 0.8s ease 0.2s',
-            marginBottom: '25px'
+            marginBottom: '16px'
           }}
         >
           {heroConfig.subtitle}
