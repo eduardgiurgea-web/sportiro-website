@@ -218,15 +218,20 @@ const AlbumCube = () => {
   useEffect(() => {
     if (!sectionRef.current) return;
 
+    // On mobile, normalize scroll to prevent browser toolbar resize jank
+    if (isMobile) {
+      ScrollTrigger.normalizeScroll(true);
+      ScrollTrigger.config({ ignoreMobileResize: true });
+    }
+
     const st = ScrollTrigger.create({
       trigger: sectionRef.current,
       start: 'top top',
       end: isMobile ? '+=250%' : '+=350%',
       scrub: isMobile ? 0.8 : 1.5,
       pin: true,
-      anticipatePin: 1,
-      fastScrollEnd: true,
-      preventOverlaps: true,
+      anticipatePin: isMobile ? 0 : 1,
+      fastScrollEnd: isMobile,
       onUpdate: (self) => {
         const progress = self.progress;
         setRotationProgress(progress);
