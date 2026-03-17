@@ -22,38 +22,60 @@ const ScrollVideo = () => {
     const section = sectionRef.current;
     if (!video || !section) return;
 
-    // Wait for video metadata so we know the duration
-    const onReady = () => {
-      // Pin the section and scrub video currentTime based on scroll
-      const st = ScrollTrigger.create({
+    let st: ScrollTrigger | null = null;
+
+    const setupScrollTrigger = () => {
+      if (st) return; // already set up
+
+      st = ScrollTrigger.create({
         trigger: section,
         start: 'top top',
-        end: isMobile ? '+=200%' : '+=300%',
-        scrub: isMobile ? 0.3 : 0.8,
+        end: '+=100%',
+        scrub: 0.3,
         pin: true,
-        anticipatePin: isMobile ? 0 : 1,
         onUpdate: (self) => {
           if (video.duration) {
             video.currentTime = self.progress * video.duration;
           }
-          // Fade text overlay in during first 20%, keep visible
           if (overlayRef.current) {
             const textOpacity = Math.min(1, self.progress / 0.15);
             overlayRef.current.style.opacity = String(textOpacity);
           }
         },
       });
-
-      return () => st.kill();
     };
 
-    if (video.readyState >= 1) {
-      const cleanup = onReady();
-      return cleanup;
+    // Force mobile browsers to load the video by playing + pausing
+    const forceLoad = () => {
+      const playPromise = video.play();
+      if (playPromise) {
+        playPromise.then(() => {
+          video.pause();
+          video.currentTime = 0;
+          setupScrollTrigger();
+        }).catch(() => {
+          // Autoplay blocked — set up anyway, video will load on first scroll
+          video.currentTime = 0;
+          setupScrollTrigger();
+        });
+      } else {
+        video.pause();
+        video.currentTime = 0;
+        setupScrollTrigger();
+      }
+    };
+
+    if (video.readyState >= 2) {
+      setupScrollTrigger();
+    } else {
+      video.addEventListener('loadeddata', () => setupScrollTrigger(), { once: true });
+      // Also try force-loading for mobile
+      forceLoad();
     }
 
-    video.addEventListener('loadedmetadata', onReady, { once: true });
-    return () => video.removeEventListener('loadedmetadata', onReady);
+    return () => {
+      st?.kill();
+    };
   }, [isMobile]);
 
   return (
@@ -69,6 +91,8 @@ const ScrollVideo = () => {
         src="/T_shirt_Exploding_Into_Fabric_Strings.mp4"
         muted
         playsInline
+        // @ts-expect-error — webkit attribute for iOS
+        webkit-playsinline=""
         preload="auto"
       />
 
