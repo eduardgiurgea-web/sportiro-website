@@ -256,7 +256,7 @@ const AlbumCube = () => {
     <section
       id="albums"
       ref={sectionRef}
-      className={`relative w-full ${isMobile ? 'h-[80vh]' : 'h-screen'} overflow-hidden z-10`}
+      className={`relative w-full ${isMobile ? 'h-[65vh]' : 'h-screen'} overflow-hidden z-10`}
       style={{ backgroundColor: '#f0ede6' /* Updated warm beige */ }}
       onPointerMove={(e) => {
         if (isMobile) return;
@@ -293,7 +293,7 @@ const AlbumCube = () => {
 
       {/* 3D Canvas */}
       <div className="absolute inset-0 z-10" style={{ pointerEvents: isMobile ? 'none' : 'auto' }}>
-        <Canvas
+        <Canvas style={{ touchAction: "pan-y" }}
           camera={{ position: [0, 0, isMobile ? 5 : 6], fov: isMobile ? 50 : 45 }}
           gl={{ 
             antialias: !isMobile, 
