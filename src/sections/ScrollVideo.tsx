@@ -4,20 +4,30 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
-// ── Video timeline breakpoints (as fraction of scroll progress) ──
-// Tune these if the text appears too early/late relative to the video
-const TEXT_FADE_IN  = 0.20; // polo faces screen → text starts appearing
-const TEXT_VISIBLE  = 0.25; // text fully visible
-const TEXT_FADE_OUT = 0.50; // polo starts pulling → text disappears
-const TEXT_GONE     = 0.55; // text fully gone
-const EXPLODE_START = 0.70; // section starts "exploding away"
-const EXPLODE_END   = 0.95; // section fully gone, next section revealed
+// ── Frame sequence ──
+const FRAME_START = 15;
+const FRAME_END = 40;
+const TOTAL_FRAMES = FRAME_END - FRAME_START + 1; // 26 frames
+
+const framePaths = Array.from({ length: TOTAL_FRAMES }, (_, i) => {
+  const num = String(FRAME_START + i).padStart(3, '0');
+  return `/jpg/ezgif-frame-${num}.jpg`;
+});
+
+// ── Timeline breakpoints (fraction of scroll progress) ──
+const TEXT_FADE_IN  = 0.20;
+const TEXT_VISIBLE  = 0.25;
+const TEXT_FADE_OUT = 0.50;
+const TEXT_GONE     = 0.55;
+const EXPLODE_START = 0.70;
+const EXPLODE_END   = 0.95;
 
 const ScrollVideo = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  const imagesRef = useRef<HTMLImageElement[]>([]);
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -27,95 +37,116 @@ const ScrollVideo = () => {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+  // Preload all frames
   useEffect(() => {
-    const video = videoRef.current;
-    const section = sectionRef.current;
-    if (!video || !section) return;
+    let loaded = 0;
+    const images: HTMLImageElement[] = [];
 
-    let st: ScrollTrigger | null = null;
+    framePaths.forEach((src, i) => {
+      const img = new Image();
+      img.src = src;
+      img.onload = () => {
+        loaded++;
+        // Draw first frame once it's ready
+        if (i === 0 && canvasRef.current) {
+          drawFrame(0);
+        }
+      };
+      images[i] = img;
+    });
 
-    const setupScrollTrigger = () => {
-      if (st) return;
+    imagesRef.current = images;
+  }, []);
 
-      st = ScrollTrigger.create({
-        trigger: section,
-        start: 'top top',
-        end: '+=150%',
-        scrub: 0.3,
-        pin: true,
-        onUpdate: (self) => {
-          const p = self.progress;
+  const drawFrame = (index: number) => {
+    const canvas = canvasRef.current;
+    const img = imagesRef.current[index];
+    if (!canvas || !img || !img.complete) return;
 
-          // 1. Drive video playback
-          if (video.duration) {
-            video.currentTime = p * video.duration;
-          }
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
 
-          // 2. Text overlay: fade in → visible → fade out
-          if (overlayRef.current) {
-            let textOpacity = 0;
-            if (p < TEXT_FADE_IN) {
-              textOpacity = 0;
-            } else if (p < TEXT_VISIBLE) {
-              textOpacity = (p - TEXT_FADE_IN) / (TEXT_VISIBLE - TEXT_FADE_IN);
-            } else if (p < TEXT_FADE_OUT) {
-              textOpacity = 1;
-            } else if (p < TEXT_GONE) {
-              textOpacity = 1 - (p - TEXT_FADE_OUT) / (TEXT_GONE - TEXT_FADE_OUT);
-            } else {
-              textOpacity = 0;
-            }
-            overlayRef.current.style.opacity = String(textOpacity);
-          }
-
-          // 3. "Explode away" — scale up + fade out the whole content
-          if (contentRef.current) {
-            if (p < EXPLODE_START) {
-              contentRef.current.style.transform = 'scale(1)';
-              contentRef.current.style.opacity = '1';
-            } else {
-              const explodeProgress = (p - EXPLODE_START) / (EXPLODE_END - EXPLODE_START);
-              const clamped = Math.min(1, Math.max(0, explodeProgress));
-              const scale = 1 + clamped * 1.5;         // zoom from 1× → 2.5×
-              const opacity = 1 - clamped;               // fade to 0
-              contentRef.current.style.transform = `scale(${scale})`;
-              contentRef.current.style.opacity = String(opacity);
-            }
-          }
-        },
-      });
-    };
-
-    // Force mobile browsers to load the video
-    const forceLoad = () => {
-      const playPromise = video.play();
-      if (playPromise) {
-        playPromise.then(() => {
-          video.pause();
-          video.currentTime = 0;
-          setupScrollTrigger();
-        }).catch(() => {
-          video.currentTime = 0;
-          setupScrollTrigger();
-        });
-      } else {
-        video.pause();
-        video.currentTime = 0;
-        setupScrollTrigger();
-      }
-    };
-
-    if (video.readyState >= 2) {
-      setupScrollTrigger();
-    } else {
-      video.addEventListener('loadeddata', () => setupScrollTrigger(), { once: true });
-      forceLoad();
+    // Size canvas to fill section
+    const rect = canvas.parentElement?.getBoundingClientRect();
+    if (rect) {
+      canvas.width = rect.width;
+      canvas.height = rect.height;
     }
 
-    return () => {
-      st?.kill();
-    };
+    // Draw image to cover the canvas (object-cover behavior)
+    const cw = canvas.width;
+    const ch = canvas.height;
+    const iw = img.naturalWidth;
+    const ih = img.naturalHeight;
+    const scale = Math.max(cw / iw, ch / ih);
+    const sw = iw * scale;
+    const sh = ih * scale;
+    const sx = (cw - sw) / 2;
+    const sy = (ch - sh) / 2;
+
+    ctx.clearRect(0, 0, cw, ch);
+    ctx.drawImage(img, sx, sy, sw, sh);
+  };
+
+  // ScrollTrigger setup
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+
+    const st = ScrollTrigger.create({
+      trigger: section,
+      start: 'top top',
+      end: '+=150%',
+      scrub: 0.3,
+      pin: true,
+      onUpdate: (self) => {
+        const p = self.progress;
+
+        // 1. Pick frame from progress
+        const frameIndex = Math.min(
+          TOTAL_FRAMES - 1,
+          Math.floor(p * TOTAL_FRAMES)
+        );
+        drawFrame(frameIndex);
+
+        // 2. Text overlay phasing
+        if (overlayRef.current) {
+          let textOpacity = 0;
+          if (p < TEXT_FADE_IN) {
+            textOpacity = 0;
+          } else if (p < TEXT_VISIBLE) {
+            textOpacity = (p - TEXT_FADE_IN) / (TEXT_VISIBLE - TEXT_FADE_IN);
+          } else if (p < TEXT_FADE_OUT) {
+            textOpacity = 1;
+          } else if (p < TEXT_GONE) {
+            textOpacity = 1 - (p - TEXT_FADE_OUT) / (TEXT_GONE - TEXT_FADE_OUT);
+          }
+          overlayRef.current.style.opacity = String(textOpacity);
+        }
+
+        // 3. Explode away
+        if (contentRef.current) {
+          if (p < EXPLODE_START) {
+            contentRef.current.style.transform = 'scale(1)';
+            contentRef.current.style.opacity = '1';
+          } else {
+            const ep = Math.min(1, (p - EXPLODE_START) / (EXPLODE_END - EXPLODE_START));
+            contentRef.current.style.transform = `scale(${1 + ep * 1.5})`;
+            contentRef.current.style.opacity = String(1 - ep);
+          }
+        }
+      },
+    });
+
+    return () => st.kill();
   }, [isMobile]);
+
+  // Resize canvas when window resizes
+  useEffect(() => {
+    const handleResize = () => drawFrame(0);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   return (
     <section
@@ -123,25 +154,19 @@ const ScrollVideo = () => {
       className="relative w-full h-[100svh] overflow-hidden"
       style={{ backgroundColor: '#000' }}
     >
-      {/* Inner wrapper — this is what "explodes away" */}
+      {/* Inner wrapper — explodes away */}
       <div
         ref={contentRef}
         className="absolute inset-0"
         style={{ transformOrigin: 'center center', willChange: 'transform, opacity' }}
       >
-        {/* Scroll-driven video background */}
-        <video
-          ref={videoRef}
-          className="absolute inset-0 w-full h-full object-cover"
-          src="/T_shirt_Exploding_Into_Fabric_Strings.mp4"
-          muted
-          playsInline
-          // @ts-expect-error — webkit attribute for iOS
-          webkit-playsinline=""
-          preload="auto"
+        {/* Canvas for frame sequence */}
+        <canvas
+          ref={canvasRef}
+          className="absolute inset-0 w-full h-full"
         />
 
-        {/* Text overlay — appears when polo faces screen, disappears before explosion */}
+        {/* Text overlay */}
         <div
           ref={overlayRef}
           className="absolute inset-0 z-10 flex items-center justify-center px-6"
