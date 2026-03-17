@@ -227,8 +227,8 @@ const AlbumCube = () => {
     const st = ScrollTrigger.create({
       trigger: sectionRef.current,
       start: 'top top',
-      end: isMobile ? '+=250%' : '+=350%',
-      scrub: isMobile ? 0.8 : 1.5,
+      end: isMobile ? '+=150%' : '+=350%',
+      scrub: isMobile ? 0.5 : 1.5,
       pin: true,
       anticipatePin: isMobile ? 0 : 1,
       fastScrollEnd: isMobile,
