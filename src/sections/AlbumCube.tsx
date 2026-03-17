@@ -292,7 +292,7 @@ const AlbumCube = () => {
       </div>
 
       {/* 3D Canvas */}
-      <div className="absolute inset-0 z-10">
+      <div className="absolute inset-0 z-10" style={{ pointerEvents: isMobile ? 'none' : 'auto' }}>
         <Canvas
           camera={{ position: [0, 0, isMobile ? 5 : 6], fov: isMobile ? 50 : 45 }}
           gl={{ 

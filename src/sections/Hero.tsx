@@ -276,20 +276,27 @@ const Hero = ({ introComplete, onOpenQuestionnaire, onRequestCallback }: HeroPro
 
 
       {/* ── MOBILE LAYOUT ── */}
-      <div className="md:hidden relative z-20 flex flex-col items-center justify-start pt-12 px-5 pb-8" style={{ minHeight: '100svh' }}>
+      <div className="md:hidden relative z-20 flex flex-col items-center justify-start pt-6 px-5" style={{ height: '100svh' }}>
         <img
           src="/backgroundnew.png"
           alt="Sportiro"
-          className="w-full max-w-[280px] object-contain mb-6"
-          style={{ opacity: introComplete ? 1 : 0, transition: 'opacity 0.8s ease' }}
+          className="w-full max-w-[260px] object-contain"
+          style={{ 
+            opacity: introComplete ? 1 : 0, 
+            transition: 'opacity 0.8s ease',
+            marginTop: '-15px',
+            marginBottom: '0px'
+          }}
         />
         <p
-          className="text-sm max-w-[300px] mx-auto mb-8 leading-relaxed text-center font-bold"
+          className="text-sm max-w-[300px] mx-auto leading-relaxed text-center font-bold"
           style={{
             color: '#0a1f5c',
             textShadow: '0 2px 10px rgba(255,255,255,0.8)',
             opacity: introComplete ? 1 : 0,
             transition: 'opacity 0.8s ease 0.2s',
+            marginTop: '-15px',
+            marginBottom: '20px'
           }}
         >
           {heroConfig.subtitle}
