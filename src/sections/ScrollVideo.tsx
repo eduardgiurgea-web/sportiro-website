@@ -24,11 +24,11 @@ const EXPLODE_END   = 0.95;
 
 const ScrollVideo = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const imgRef = useRef<HTMLImageElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
-  const imagesRef = useRef<HTMLImageElement[]>([]);
   const [isMobile, setIsMobile] = useState(false);
+  const currentFrameRef = useRef(0);
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -37,56 +37,13 @@ const ScrollVideo = () => {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Preload all frames
+  // Preload all frames into browser cache
   useEffect(() => {
-    let loaded = 0;
-    const images: HTMLImageElement[] = [];
-
-    framePaths.forEach((src, i) => {
+    framePaths.forEach((src) => {
       const img = new Image();
       img.src = src;
-      img.onload = () => {
-        loaded++;
-        // Draw first frame once it's ready
-        if (i === 0 && canvasRef.current) {
-          drawFrame(0);
-        }
-      };
-      images[i] = img;
     });
-
-    imagesRef.current = images;
   }, []);
-
-  const drawFrame = (index: number) => {
-    const canvas = canvasRef.current;
-    const img = imagesRef.current[index];
-    if (!canvas || !img || !img.complete) return;
-
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    // Size canvas to fill section
-    const rect = canvas.parentElement?.getBoundingClientRect();
-    if (rect) {
-      canvas.width = rect.width;
-      canvas.height = rect.height;
-    }
-
-    // Draw image to cover the canvas (object-cover behavior)
-    const cw = canvas.width;
-    const ch = canvas.height;
-    const iw = img.naturalWidth;
-    const ih = img.naturalHeight;
-    const scale = Math.max(cw / iw, ch / ih);
-    const sw = iw * scale;
-    const sh = ih * scale;
-    const sx = (cw - sw) / 2;
-    const sy = (ch - sh) / 2;
-
-    ctx.clearRect(0, 0, cw, ch);
-    ctx.drawImage(img, sx, sy, sw, sh);
-  };
 
   // ScrollTrigger setup
   useEffect(() => {
@@ -107,18 +64,19 @@ const ScrollVideo = () => {
           TOTAL_FRAMES - 1,
           Math.floor(p * TOTAL_FRAMES)
         );
-        drawFrame(frameIndex);
+        if (imgRef.current && frameIndex !== currentFrameRef.current) {
+          currentFrameRef.current = frameIndex;
+          imgRef.current.src = framePaths[frameIndex];
+        }
 
         // 2. Text overlay phasing
         if (overlayRef.current) {
           let textOpacity = 0;
-          if (p < TEXT_FADE_IN) {
-            textOpacity = 0;
-          } else if (p < TEXT_VISIBLE) {
+          if (p >= TEXT_FADE_IN && p < TEXT_VISIBLE) {
             textOpacity = (p - TEXT_FADE_IN) / (TEXT_VISIBLE - TEXT_FADE_IN);
-          } else if (p < TEXT_FADE_OUT) {
+          } else if (p >= TEXT_VISIBLE && p < TEXT_FADE_OUT) {
             textOpacity = 1;
-          } else if (p < TEXT_GONE) {
+          } else if (p >= TEXT_FADE_OUT && p < TEXT_GONE) {
             textOpacity = 1 - (p - TEXT_FADE_OUT) / (TEXT_GONE - TEXT_FADE_OUT);
           }
           overlayRef.current.style.opacity = String(textOpacity);
@@ -141,13 +99,6 @@ const ScrollVideo = () => {
     return () => st.kill();
   }, [isMobile]);
 
-  // Resize canvas when window resizes
-  useEffect(() => {
-    const handleResize = () => drawFrame(0);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
   return (
     <section
       ref={sectionRef}
@@ -160,10 +111,12 @@ const ScrollVideo = () => {
         className="absolute inset-0"
         style={{ transformOrigin: 'center center', willChange: 'transform, opacity' }}
       >
-        {/* Canvas for frame sequence */}
-        <canvas
-          ref={canvasRef}
-          className="absolute inset-0 w-full h-full"
+        {/* Frame image — swapped on scroll */}
+        <img
+          ref={imgRef}
+          src={framePaths[0]}
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover"
         />
 
         {/* Text overlay */}
