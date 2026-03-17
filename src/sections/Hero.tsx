@@ -24,11 +24,11 @@ const MERCH_ITEMS = [
 
 // Ribbon positions for merchandise (following a diagonal flowing line, but kept away from center)
 const MERCH_POSITIONS = [
-  { x: -38, y: 35, z: -200, rotation: -15 }, // Bottom left
-  { x: -32, y: -25, z: 100, rotation: 10 },  // Top left
-  { x: 35, y: -30, z: -50, rotation: -5 },   // Top right
-  { x: 32, y: 15, z: 150, rotation: 15 },    // Middle right
-  { x: 0, y: 22, z: 100, rotation: -5 },     // Bottom Center (Directly under buttons)
+  { x: -38, y: -15, z: -200, rotation: -15 }, // Upper left (T-Shirt)
+  { x: -32, y: -25, z: 100, rotation: 10 },   // Top left (Hoodie)
+  { x: 35, y: -30, z: -50, rotation: -5 },    // Top right (Polo)
+  { x: 32, y: -18, z: 150, rotation: 15 },    // Upper right (Cap)
+  { x: 5, y: -10, z: 100, rotation: -5 },     // Upper center-right (Tote Bag)
 ];
 
 interface HeroProps {
@@ -133,7 +133,7 @@ const Hero = ({ introComplete, onOpenQuestionnaire, onRequestCallback }: HeroPro
         
         gsap.to(item, {
           x: isMob ? `${xOffset}vw` : `+=${xOffset}`,
-          y: isMob ? `${pos.y > 0 ? 15 : -35}vh` : `-=30`,
+          y: isMob ? `${Math.min(pos.y - 8, -10)}vh` : `-=30`,
           duration: gsap.utils.random(4, 7),
           repeat: -1,
           yoyo: true,
@@ -285,15 +285,15 @@ const Hero = ({ introComplete, onOpenQuestionnaire, onRequestCallback }: HeroPro
 
 
       {/* ── MOBILE LAYOUT ── */}
-      <div className="md:hidden relative z-20 flex flex-col items-center justify-center pt-20 px-5 pb-6" style={{ minHeight: '100svh' }}>
+      <div className="md:hidden relative z-20 flex flex-col items-center justify-start pt-20 px-5 pb-6" style={{ minHeight: '100svh' }}>
         <img
           src="/backgroundnew.png"
           alt="Sportiro"
-          className="w-full max-w-[240px] object-contain relative z-10"
+          className="w-full max-w-[290px] object-contain relative z-10"
           style={{
             opacity: introComplete ? 1 : 0,
             transition: 'opacity 0.8s ease',
-            marginBottom: '4px'
+            marginBottom: '2px'
           }}
         />
         <p
@@ -303,7 +303,7 @@ const Hero = ({ introComplete, onOpenQuestionnaire, onRequestCallback }: HeroPro
             textShadow: '0 2px 10px rgba(255,255,255,0.8)',
             opacity: introComplete ? 1 : 0,
             transition: 'opacity 0.8s ease 0.2s',
-            marginBottom: '16px'
+            marginBottom: '10px'
           }}
         >
           {heroConfig.subtitle}
