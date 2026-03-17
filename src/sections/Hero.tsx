@@ -118,9 +118,13 @@ const Hero = ({ introComplete, onOpenQuestionnaire, onRequestCallback }: HeroPro
         const pos = MERCH_POSITIONS[i];
 
         const isMob = window.innerWidth < 768;
+        // Pushing items further to the sides on mobile to clear the center text area
+        const xOffset = isMob ? (pos.x > 0 ? 45 : -45) : (pos.x > 0 ? 1 : -1) * 40;
+        const yOffset = isMob ? (pos.y > 0 ? 10 : -10) : -30;
+
         gsap.to(item, {
-          x: `+=${(pos.x > 0 ? 1 : -1) * (isMob ? 10 : 40)}`,
-          y: `-=${isMob ? 10 : 30}`,
+          x: isMob ? `${xOffset}vw` : `+=${xOffset}`,
+          y: isMob ? `${pos.y + (yOffset/10)}vh` : `-=30`,
           duration: gsap.utils.random(4, 7),
           repeat: -1,
           yoyo: true,
@@ -244,7 +248,7 @@ const Hero = ({ introComplete, onOpenQuestionnaire, onRequestCallback }: HeroPro
   return (
     <section
       ref={heroRef}
-      className="relative w-full min-h-screen md:min-h-[120vh] overflow-hidden md:overflow-x-hidden"
+      className="relative w-full min-h-[100svh] md:min-h-[120vh] overflow-hidden"
       style={{ backgroundColor: 'var(--warm-cream)' }}
     >
       {/* Side glow effects */}
@@ -272,18 +276,18 @@ const Hero = ({ introComplete, onOpenQuestionnaire, onRequestCallback }: HeroPro
 
 
       {/* ── MOBILE LAYOUT ── */}
-      <div className="md:hidden relative z-20 flex flex-col items-center justify-start pt-16 px-5 pb-12" style={{ minHeight: '100svh' }}>
+      <div className="md:hidden relative z-20 flex flex-col items-center justify-start pt-12 px-5 pb-8" style={{ minHeight: '100svh' }}>
         <img
           src="/backgroundnew.png"
           alt="Sportiro"
-          className="w-72 object-contain mb-4"
+          className="w-full max-w-[280px] object-contain mb-6"
           style={{ opacity: introComplete ? 1 : 0, transition: 'opacity 0.8s ease' }}
         />
         <p
-          className="text-sm max-w-[260px] mx-auto mb-6 leading-relaxed text-center font-semibold"
+          className="text-sm max-w-[300px] mx-auto mb-8 leading-relaxed text-center font-bold"
           style={{
             color: '#0a1f5c',
-            textShadow: '0 4px 20px rgba(255,255,255,0.9)',
+            textShadow: '0 2px 10px rgba(255,255,255,0.8)',
             opacity: introComplete ? 1 : 0,
             transition: 'opacity 0.8s ease 0.2s',
           }}
@@ -291,19 +295,19 @@ const Hero = ({ introComplete, onOpenQuestionnaire, onRequestCallback }: HeroPro
           {heroConfig.subtitle}
         </p>
         <div
-          className="flex flex-col gap-3 w-full max-w-[260px]"
+          className="flex flex-col gap-4 w-full max-w-[280px]"
           style={{ opacity: introComplete ? 1 : 0, transition: 'opacity 0.8s ease 0.4s' }}
         >
           <button
             onClick={onOpenQuestionnaire ?? (() => scrollToSection(heroConfig.ctaPrimaryTarget))}
-            className="btn-orange-pulse flex items-center justify-center gap-2 group px-5 py-3 rounded-full text-xs font-bold uppercase tracking-widest w-full"
+            className="btn-orange-pulse flex items-center justify-center gap-2 group px-6 py-4 rounded-full text-xs font-bold uppercase tracking-widest w-full shadow-lg"
           >
             {heroConfig.ctaPrimary}
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            <ArrowRight className="w-4 h-4" />
           </button>
           <button
             onClick={onRequestCallback ?? (() => scrollToSection(heroConfig.ctaSecondaryTarget))}
-            className="btn-orange-pulse flex items-center justify-center gap-2 px-5 py-3 rounded-full text-xs font-bold uppercase tracking-widest w-full"
+            className="btn-orange-pulse flex items-center justify-center gap-2 px-6 py-4 rounded-full text-xs font-bold uppercase tracking-widest w-full shadow-lg"
           >
             {heroConfig.ctaSecondary}
           </button>
@@ -334,23 +338,27 @@ const Hero = ({ introComplete, onOpenQuestionnaire, onRequestCallback }: HeroPro
         </div>
       </nav>
 
-      {/* Mobile Navigation — logo icon + burger at top-right */}
-      <nav className="md:hidden fixed top-3 right-3 z-50 flex flex-col items-center gap-1">
-        <img src="/sportirologo.png" alt="Sportiro" className="w-9 h-9 object-contain drop-shadow-md" />
-        <button
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="p-1.5 rounded-xl bg-white/85 backdrop-blur-sm shadow-md"
-          style={{ color: 'var(--warm-dark)' }}
-        >
-          {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
-        </button>
+      {/* Mobile Navigation — logo icon + burger floating top-right */}
+      <nav className="md:hidden fixed top-4 right-4 z-50 flex flex-col items-center gap-2">
+        <div className="bg-white/80 backdrop-blur-md p-1.5 rounded-2xl shadow-xl border border-white/50 flex flex-col items-center gap-1">
+          <img src="/sportirologo.png" alt="Sportiro" className="w-11 h-11 object-contain drop-shadow-sm" />
+          <div className="w-8 h-px bg-gray-200/50" />
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="p-2 rounded-xl transition-colors hover:bg-gray-100"
+            style={{ color: 'var(--warm-dark)' }}
+          >
+            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
+        </div>
+        
         {mobileMenuOpen && (
-          <div className="mt-1 bg-white/95 backdrop-blur-sm rounded-2xl py-2 px-1 shadow-xl border border-white/50 min-w-[150px]">
+          <div className="mt-1 bg-white/95 backdrop-blur-sm rounded-2xl py-2 px-1 shadow-2xl border border-white/50 min-w-[160px] animate-in fade-in zoom-in duration-300">
             {heroConfig.navItems.map((item) => (
               <button
                 key={item.sectionId}
                 onClick={() => scrollToSection(item.sectionId)}
-                className="w-full flex items-center px-3 py-2.5 text-xs font-semibold uppercase tracking-wider rounded-xl hover:bg-gray-50 transition-colors text-left"
+                className="w-full flex items-center px-4 py-3 text-xs font-bold uppercase tracking-wider rounded-xl hover:bg-gray-50 transition-colors text-left"
                 style={{ color: 'var(--warm-dark)' }}
               >
                 {item.label}
@@ -360,11 +368,11 @@ const Hero = ({ introComplete, onOpenQuestionnaire, onRequestCallback }: HeroPro
         )}
       </nav>
 
-      {/* Fixed logo in corner (appears when scrolled) */}
+      {/* Fixed logo in corner (appears when scrolled) — Desktop only */}
       {logoInCorner && (
         <div
           ref={logoFixedRef}
-          className="fixed top-6 left-6 z-[60] flex items-center gap-2 cursor-pointer"
+          className="hidden md:flex fixed top-6 left-6 z-[60] flex items-center gap-2 cursor-pointer"
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
         >
           <img

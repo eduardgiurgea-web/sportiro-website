@@ -161,12 +161,12 @@ const PuzzleCube = ({ rotationProgress, isMobile, mousePos, currentAlbumIndex }:
       groupRef.current.rotation.y = THREE.MathUtils.lerp(
         groupRef.current.rotation.y,
         finalY,
-        0.08
+        isMobile ? 0.05 : 0.08
       );
       groupRef.current.rotation.x = THREE.MathUtils.lerp(
         groupRef.current.rotation.x,
         finalX,
-        0.08
+        isMobile ? 0.05 : 0.08
       );
     }
   });
@@ -220,10 +220,10 @@ const AlbumCube = () => {
 
     const st = ScrollTrigger.create({
       trigger: sectionRef.current,
-      start: 'top top',
-      end: isMobile ? '+=150%' : '+=300%',
-      scrub: 1,
-      pin: true,
+      start: 'top 40%',
+      end: isMobile ? '+=80%' : '+=250%',
+      scrub: isMobile ? 0.8 : 1.5,
+      pin: false, // Never pin on mobile to avoid scroll-hijacking/blocks
       onUpdate: (self) => {
         const progress = self.progress;
         setRotationProgress(progress);
@@ -256,7 +256,7 @@ const AlbumCube = () => {
     <section
       id="albums"
       ref={sectionRef}
-      className="relative w-full h-screen overflow-hidden z-10"
+      className={`relative w-full ${isMobile ? 'h-[80vh]' : 'h-screen'} overflow-hidden z-10`}
       style={{ backgroundColor: '#f0ede6' /* Updated warm beige */ }}
       onPointerMove={(e) => {
         if (isMobile) return;
@@ -295,7 +295,12 @@ const AlbumCube = () => {
       <div className="absolute inset-0 z-10">
         <Canvas
           camera={{ position: [0, 0, isMobile ? 5 : 6], fov: isMobile ? 50 : 45 }}
-          gl={{ antialias: true, alpha: true }}
+          gl={{ 
+            antialias: !isMobile, 
+            alpha: true,
+            powerPreference: 'high-performance'
+          }}
+          dpr={isMobile ? [1, 1.5] : [1, 2]}
         >
           <Suspense fallback={null}>
             <ambientLight intensity={0.5} />
