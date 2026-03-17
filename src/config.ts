@@ -173,9 +173,6 @@ export const parallaxGalleryConfig: ParallaxGalleryConfig = {
     { id: 1, src: "/IMG_0540-300x160.2.jpg", alt: "Gadget promozionali" },
     { id: 2, src: "/IMG_0561-300x208.5.jpg", alt: "T-shirt per eventi" },
     { id: 3, src: "/IMG_0561-300x208.5.jpg", alt: "Personalizzazione colori" },
-    { id: 4, src: "/print-process-1.jpg", alt: "Serigrafia" },
-    { id: 5, src: "/print-process-2.jpg", alt: "Ricamo" },
-    { id: 6, src: "/print-process-3.jpg", alt: "Stampa a caldo" },
   ],
   galleryImages: [
     { id: 1, src: "/IMG_0552-300x225.3.jpg", title: "Kit Sportivi Completi", date: "2024" },
