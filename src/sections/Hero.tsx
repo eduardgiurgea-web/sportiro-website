@@ -15,20 +15,20 @@ const ICON_MAP = {
 
 // Merchandise items configuration
 const MERCH_ITEMS = [
-  { src: '/Gemini_Generated_Image_mmd0gmmd0gmmd0gm.png', alt: 'Sportiro T-Shirt', size: 'w-12 h-12 md:w-52 md:h-52' },
-  { src: '/Gemini_Generated_Image_j1e0yej1e0yej1e0.png', alt: 'Sportiro Hoodie', size: 'w-14 h-14 md:w-56 md:h-56' },
-  { src: '/Gemini_Generated_Image_2kjx9d2kjx9d2kjx.png', alt: 'Sportiro Polo', size: 'w-12 h-12 md:w-48 md:h-48' },
-  { src: '/Gemini_Generated_Image_5cns1l5cns1l5cns.png', alt: 'Sportiro Cap', size: 'w-10 h-10 md:w-40 md:h-40' },
-  { src: '/Gemini_Generated_Image_k25z7ok25z7ok25z.png', alt: 'Sportiro Tote Bag', size: 'w-12 h-12 md:w-44 md:h-44' },
+  { src: '/Gemini_Generated_Image_mmd0gmmd0gmmd0gm.png', alt: 'Sportiro T-Shirt', size: 'w-16 h-16 md:w-52 md:h-52' },
+  { src: '/Gemini_Generated_Image_j1e0yej1e0yej1e0.png', alt: 'Sportiro Hoodie', size: 'w-20 h-20 md:w-56 md:h-56' },
+  { src: '/Gemini_Generated_Image_2kjx9d2kjx9d2kjx.png', alt: 'Sportiro Polo', size: 'w-16 h-16 md:w-48 md:h-48' },
+  { src: '/Gemini_Generated_Image_5cns1l5cns1l5cns.png', alt: 'Sportiro Cap', size: 'w-14 h-14 md:w-40 md:h-40' },
+  { src: '/Gemini_Generated_Image_k25z7ok25z7ok25z.png', alt: 'Sportiro Tote Bag', size: 'w-16 h-16 md:w-44 md:h-44' },
 ];
 
 // Ribbon positions for merchandise (following a diagonal flowing line, but kept away from center)
 const MERCH_POSITIONS = [
-  { x: -42, y: 38, z: -200, rotation: -15 }, // Bottom left — pushed further out
-  { x: -38, y: -30, z: 100, rotation: 10 },  // Top left — pushed further out
-  { x: 40, y: -32, z: -50, rotation: -5 },   // Top right — pushed further out
-  { x: 38, y: 18, z: 150, rotation: 15 },    // Middle right — pushed further out
-  { x: 0, y: 32, z: 100, rotation: -5 },     // Bottom Center — pushed below buttons
+  { x: -38, y: 35, z: -200, rotation: -15 }, // Bottom left
+  { x: -32, y: -25, z: 100, rotation: 10 },  // Top left
+  { x: 35, y: -30, z: -50, rotation: -5 },   // Top right
+  { x: 32, y: 15, z: 150, rotation: 15 },    // Middle right
+  { x: 0, y: 22, z: 100, rotation: -5 },     // Bottom Center (Directly under buttons)
 ];
 
 interface HeroProps {
@@ -51,10 +51,20 @@ const Hero = ({ introComplete, onOpenQuestionnaire, onRequestCallback }: HeroPro
   const subtitleRef = useRef<HTMLParagraphElement>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [logoInCorner, setLogoInCorner] = useState(false);
+  const [hasScrolled, setHasScrolled] = useState(false);
   const logoInCornerRef = useRef(false);
   const cachedWindowRef = useRef({ w: window.innerWidth, h: window.innerHeight });
   const merchItemRefs = useRef<(HTMLDivElement | null)[]>([]);
   const orbitAnimRef = useRef<gsap.core.Timeline | null>(null);
+
+  // Track scroll for mobile top navigation
+  useEffect(() => {
+    const handleScroll = () => {
+      setHasScrolled(window.scrollY > 40);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Merchandise entrance + orbit animation
   useEffect(() => {
@@ -123,7 +133,7 @@ const Hero = ({ introComplete, onOpenQuestionnaire, onRequestCallback }: HeroPro
         
         gsap.to(item, {
           x: isMob ? `${xOffset}vw` : `+=${xOffset}`,
-          y: isMob ? `${pos.y > 0 ? 35 : -35}vh` : `-=30`,
+          y: isMob ? `${pos.y > 0 ? 15 : -35}vh` : `-=30`,
           duration: gsap.utils.random(4, 7),
           repeat: -1,
           yoyo: true,
@@ -247,7 +257,7 @@ const Hero = ({ introComplete, onOpenQuestionnaire, onRequestCallback }: HeroPro
   return (
     <section
       ref={heroRef}
-      className="relative w-full min-h-[70vh] md:min-h-[120vh] overflow-hidden"
+      className="relative w-full min-h-[85vh] md:min-h-[120vh] overflow-hidden"
       style={{ backgroundColor: 'var(--warm-cream)' }}
     >
       {/* Side glow effects */}
@@ -275,16 +285,15 @@ const Hero = ({ introComplete, onOpenQuestionnaire, onRequestCallback }: HeroPro
 
 
       {/* ── MOBILE LAYOUT ── */}
-      <div className="md:hidden relative z-20 flex flex-col items-center justify-start pt-2 px-5 pb-4" style={{ minHeight: '75vh' }}>
+      <div className="md:hidden relative z-20 flex flex-col items-center justify-start pt-28 px-5 pb-8" style={{ minHeight: '85vh' }}>
         <img
           src="/backgroundnew.png"
           alt="Sportiro"
-          className="w-full max-w-[260px] object-contain relative z-10"
+          className="w-full max-w-[280px] object-contain relative z-10"
           style={{ 
             opacity: introComplete ? 1 : 0, 
             transition: 'opacity 0.8s ease',
-            marginTop: '-70px',
-            marginBottom: '-55px'
+            marginBottom: '5px'
           }}
         />
         <p
@@ -294,13 +303,13 @@ const Hero = ({ introComplete, onOpenQuestionnaire, onRequestCallback }: HeroPro
             textShadow: '0 2px 10px rgba(255,255,255,0.8)',
             opacity: introComplete ? 1 : 0,
             transition: 'opacity 0.8s ease 0.2s',
-            marginBottom: '10px'
+            marginBottom: '25px'
           }}
         >
           {heroConfig.subtitle}
         </p>
         <div
-          className="flex flex-col gap-2 w-full max-w-[280px] relative z-20"
+          className="flex flex-col gap-3 w-full max-w-[280px] relative z-20"
           style={{ opacity: introComplete ? 1 : 0, transition: 'opacity 0.8s ease 0.4s' }}
         >
           <button
@@ -343,11 +352,37 @@ const Hero = ({ introComplete, onOpenQuestionnaire, onRequestCallback }: HeroPro
         </div>
       </nav>
 
-      {/* Mobile Navigation — logo icon + burger floating top-right */}
-      <nav className="md:hidden fixed top-4 right-4 z-50 flex flex-col items-center gap-2">
-        <div className="bg-white/80 backdrop-blur-md p-1.5 rounded-2xl shadow-xl border border-white/50 flex flex-col items-center gap-1">
-          <img src="/sportirologo.png" alt="Sportiro" className="w-11 h-11 object-contain drop-shadow-sm" />
-          <div className="w-8 h-px bg-gray-200/50" />
+      {/* Mobile Navigation — horizontal on load, vertical float on scroll */}
+      <nav 
+        className={`md:hidden z-50 transition-all duration-300 ${
+          hasScrolled 
+            ? 'fixed top-4 right-4 flex flex-col items-end gap-2' 
+            : 'absolute top-0 left-0 w-full px-4 pt-4 pb-2 flex flex-col items-center'
+        }`}
+      >
+        <div className={`bg-white/80 backdrop-blur-md shadow-xl border border-white/50 flex transition-all duration-300 ${
+          hasScrolled 
+            ? 'flex-col items-center p-1.5 rounded-2xl gap-1' 
+            : 'flex-row items-center justify-between w-full px-4 py-2 rounded-2xl'
+        }`}>
+          {/* Logo Section */}
+          <div className="flex items-center gap-3">
+            <img 
+              src="/sportirologo.png" 
+              alt="Sportiro" 
+              className={`object-contain drop-shadow-sm transition-all duration-300 ${hasScrolled ? 'w-11 h-11' : 'w-8 h-8'}`} 
+            />
+            {!hasScrolled && (
+              <span className="font-bold text-sm tracking-widest uppercase" style={{ color: '#0a1f5c' }}>
+                SPORTIRO
+              </span>
+            )}
+          </div>
+
+          {/* Divider only when scrolling (vertical form) */}
+          {hasScrolled && <div className="w-8 h-px bg-gray-200/50" />}
+
+          {/* Burger Button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="p-2 rounded-xl transition-colors hover:bg-gray-100"
@@ -358,7 +393,9 @@ const Hero = ({ introComplete, onOpenQuestionnaire, onRequestCallback }: HeroPro
         </div>
         
         {mobileMenuOpen && (
-          <div className="mt-1 bg-white/95 backdrop-blur-sm rounded-2xl py-2 px-1 shadow-2xl border border-white/50 min-w-[160px] animate-in fade-in zoom-in duration-300">
+          <div className={`w-full bg-white/95 backdrop-blur-sm rounded-2xl py-2 px-1 shadow-2xl border border-white/50 animate-in fade-in zoom-in duration-300 ${
+            hasScrolled ? 'mt-1 min-w-[160px]' : 'mt-2'
+          }`}>
             {heroConfig.navItems.map((item) => (
               <button
                 key={item.sectionId}
@@ -405,7 +442,7 @@ const Hero = ({ introComplete, onOpenQuestionnaire, onRequestCallback }: HeroPro
       {/* 3D Perspective container for merchandise */}
       <div
         ref={merchContainerRef}
-        className="absolute inset-0 z-5 pointer-events-none"
+        className="absolute inset-0 z-10 pointer-events-none"
         style={{ perspective: '1200px', perspectiveOrigin: '50% 50%' }}
       >
         {MERCH_ITEMS.map((item, i) => (
