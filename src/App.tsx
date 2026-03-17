@@ -10,7 +10,6 @@ import ParallaxGallery from './sections/ParallaxGallery';
 import ProcessMap from './sections/ProcessMap';
 import Partners from './sections/Partners';
 import TourSchedule from './sections/TourSchedule';
-import ScrollVideo from './sections/ScrollVideo';
 import Footer from './sections/Footer';
 import ChatWidget from './components/ChatWidget';
 import CallbackModal from './components/CallbackModal';
@@ -75,7 +74,6 @@ function App() {
       {/* Sections with strong pull-up effect on scroll */}
       <Partners />
       <TourSchedule />
-      <ScrollVideo />
       <Footer />
 
       {/* AI Chat Widget — Sofia (controlled) */}
