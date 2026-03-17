@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState, useMemo } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ArrowRight, Sparkles } from 'lucide-react';
@@ -19,8 +19,30 @@ const ParallaxGallery = () => {
   const parallaxContainerRef = useRef<HTMLDivElement>(null);
   const topRowRef = useRef<HTMLDivElement>(null);
   const bottomRowRef = useRef<HTMLDivElement>(null);
+  const spiralPairRefs = useRef<(HTMLDivElement | null)[]>([]);
   const scrollTriggerRefs = useRef<ScrollTrigger[]>([]);
   const [isMobile, setIsMobile] = useState(false);
+
+  // Combine all images into pairs for mobile spiral
+  const spiralPairs = useMemo(() => {
+    const all = [
+      ...parallaxGalleryConfig.parallaxImagesTop,
+      ...parallaxGalleryConfig.parallaxImagesBottom,
+    ];
+    // Dedupe by src
+    const seen = new Set<string>();
+    const unique = all.filter(img => {
+      if (seen.has(img.src)) return false;
+      seen.add(img.src);
+      return true;
+    });
+    // Group into pairs
+    const pairs: typeof unique[] = [];
+    for (let i = 0; i < unique.length; i += 2) {
+      pairs.push(unique.slice(i, i + 2));
+    }
+    return pairs;
+  }, []);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -31,8 +53,9 @@ const ParallaxGallery = () => {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+  // Desktop parallax strips
   useEffect(() => {
-    if (!sectionRef.current) return;
+    if (!sectionRef.current || isMobile) return;
 
     const ctx = gsap.context(() => {
       if (topRowRef.current && bottomRowRef.current) {
@@ -43,7 +66,7 @@ const ParallaxGallery = () => {
           scrub: 1,
           onUpdate: (self) => {
             const progress = self.progress;
-            const moveAmount = isMobile ? 150 : 250;
+            const moveAmount = 250;
             if (topRowRef.current) {
               gsap.set(topRowRef.current, { x: -progress * moveAmount });
             }
@@ -63,6 +86,43 @@ const ParallaxGallery = () => {
     };
   }, [isMobile]);
 
+  // Mobile spiral animation
+  useEffect(() => {
+    if (!sectionRef.current || !isMobile) return;
+
+    const pairs = spiralPairRefs.current.filter(Boolean);
+    if (pairs.length === 0) return;
+
+    const ctx = gsap.context(() => {
+      pairs.forEach((pair, i) => {
+        if (!pair) return;
+        const fromLeft = i % 2 === 0;
+        gsap.set(pair, {
+          opacity: 0,
+          x: fromLeft ? -60 : 60,
+          rotation: fromLeft ? -4 : 4,
+        });
+
+        ScrollTrigger.create({
+          trigger: pair,
+          start: 'top 85%',
+          once: true,
+          onEnter: () => {
+            gsap.to(pair, {
+              opacity: 1,
+              x: 0,
+              rotation: 0,
+              duration: 0.7,
+              ease: 'power3.out',
+            });
+          },
+        });
+      });
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, [isMobile]);
+
   return (
     <section
       id="gallery"
@@ -78,7 +138,7 @@ const ParallaxGallery = () => {
         {/* Section header */}
         <div className="px-6 md:px-12 mb-10 md:mb-16">
           <p className="section-label mb-3 md:mb-4">{parallaxGalleryConfig.sectionLabel}</p>
-          <h2 
+          <h2
             className="font-serif text-3xl md:text-5xl lg:text-6xl"
             style={{ color: 'var(--warm-dark)' }}
           >
@@ -86,49 +146,81 @@ const ParallaxGallery = () => {
           </h2>
         </div>
 
-        {/* Top row */}
-        <div
-          ref={topRowRef}
-          className="flex gap-3 md:gap-5 mb-3 md:mb-5 will-change-transform"
-        >
-          {parallaxGalleryConfig.parallaxImagesTop.map((image) => (
-            <div
-              key={image.id}
-              className="relative flex-shrink-0 w-[280px] h-[180px] md:w-[380px] md:h-[240px] overflow-hidden image-hover-scale"
-            >
-              <img
-                src={image.src}
-                alt={image.alt}
-                className="w-full h-full object-cover"
-              />
-              <div 
-                className="absolute inset-0"
-                style={{ background: 'linear-gradient(to top, rgba(61,53,46,0.2), transparent)' }}
-              />
-            </div>
-          ))}
+        {/* Desktop: horizontal parallax strips */}
+        <div className="hidden md:block">
+          {/* Top row */}
+          <div
+            ref={topRowRef}
+            className="flex gap-5 mb-5 will-change-transform"
+          >
+            {parallaxGalleryConfig.parallaxImagesTop.map((image) => (
+              <div
+                key={image.id}
+                className="relative flex-shrink-0 w-[380px] h-[240px] overflow-hidden image-hover-scale"
+              >
+                <img
+                  src={image.src}
+                  alt={image.alt}
+                  className="w-full h-full object-cover"
+                />
+                <div
+                  className="absolute inset-0"
+                  style={{ background: 'linear-gradient(to top, rgba(61,53,46,0.2), transparent)' }}
+                />
+              </div>
+            ))}
+          </div>
+
+          {/* Bottom row */}
+          <div
+            ref={bottomRowRef}
+            className="flex gap-5 will-change-transform"
+            style={{ transform: 'translateX(-100px)' }}
+          >
+            {parallaxGalleryConfig.parallaxImagesBottom.map((image) => (
+              <div
+                key={image.id}
+                className="relative flex-shrink-0 w-[380px] h-[240px] overflow-hidden image-hover-scale"
+              >
+                <img
+                  src={image.src}
+                  alt={image.alt}
+                  className="w-full h-full object-cover"
+                />
+                <div
+                  className="absolute inset-0"
+                  style={{ background: 'linear-gradient(to top, rgba(61,53,46,0.2), transparent)' }}
+                />
+              </div>
+            ))}
+          </div>
         </div>
 
-        {/* Bottom row */}
-        <div
-          ref={bottomRowRef}
-          className="flex gap-3 md:gap-5 will-change-transform"
-          style={{ transform: 'translateX(-100px)' }}
-        >
-          {parallaxGalleryConfig.parallaxImagesBottom.map((image) => (
+        {/* Mobile: spiral scroll — 2 images per row, alternating sides */}
+        <div className="md:hidden flex flex-col gap-5 px-4">
+          {spiralPairs.map((pair, i) => (
             <div
-              key={image.id}
-              className="relative flex-shrink-0 w-[280px] h-[180px] md:w-[380px] md:h-[240px] overflow-hidden image-hover-scale"
+              key={i}
+              ref={el => { spiralPairRefs.current[i] = el; }}
+              className={`flex gap-3 ${i % 2 === 0 ? 'self-start' : 'self-end'}`}
+              style={{ width: '85%' }}
             >
-              <img
-                src={image.src}
-                alt={image.alt}
-                className="w-full h-full object-cover"
-              />
-              <div 
-                className="absolute inset-0"
-                style={{ background: 'linear-gradient(to top, rgba(61,53,46,0.2), transparent)' }}
-              />
+              {pair.map((image) => (
+                <div
+                  key={image.id}
+                  className="relative flex-1 aspect-[4/3] overflow-hidden rounded-lg"
+                >
+                  <img
+                    src={image.src}
+                    alt={image.alt}
+                    className="w-full h-full object-cover"
+                  />
+                  <div
+                    className="absolute inset-0"
+                    style={{ background: 'linear-gradient(to top, rgba(61,53,46,0.2), transparent)' }}
+                  />
+                </div>
+              ))}
             </div>
           ))}
         </div>

@@ -207,7 +207,7 @@ export default function ChatWidget({ open, onOpenChange, mode }: ChatWidgetProps
       className="fixed bottom-28 right-3 z-[99] flex flex-col rounded-2xl shadow-2xl overflow-hidden transition-all duration-300 md:bottom-44 md:right-6"
       style={{
         width: 'min(340px, calc(100vw - 1.5rem))',
-        height: open ? 'min(420px, 60vh)' : '0px',
+        height: open ? 'min(520px, 75svh)' : '0px',
         opacity: open ? 1 : 0,
         pointerEvents: open ? 'auto' : 'none',
         background: '#fff',
