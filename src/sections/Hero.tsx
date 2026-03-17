@@ -15,20 +15,20 @@ const ICON_MAP = {
 
 // Merchandise items configuration
 const MERCH_ITEMS = [
-  { src: '/Gemini_Generated_Image_mmd0gmmd0gmmd0gm.png', alt: 'Sportiro T-Shirt', size: 'w-16 h-16 md:w-52 md:h-52' },
-  { src: '/Gemini_Generated_Image_j1e0yej1e0yej1e0.png', alt: 'Sportiro Hoodie', size: 'w-20 h-20 md:w-56 md:h-56' },
-  { src: '/Gemini_Generated_Image_2kjx9d2kjx9d2kjx.png', alt: 'Sportiro Polo', size: 'w-16 h-16 md:w-48 md:h-48' },
-  { src: '/Gemini_Generated_Image_5cns1l5cns1l5cns.png', alt: 'Sportiro Cap', size: 'w-14 h-14 md:w-40 md:h-40' },
-  { src: '/Gemini_Generated_Image_k25z7ok25z7ok25z.png', alt: 'Sportiro Tote Bag', size: 'w-16 h-16 md:w-44 md:h-44' },
+  { src: '/Gemini_Generated_Image_mmd0gmmd0gmmd0gm.png', alt: 'Sportiro T-Shirt', size: 'w-12 h-12 md:w-52 md:h-52' },
+  { src: '/Gemini_Generated_Image_j1e0yej1e0yej1e0.png', alt: 'Sportiro Hoodie', size: 'w-14 h-14 md:w-56 md:h-56' },
+  { src: '/Gemini_Generated_Image_2kjx9d2kjx9d2kjx.png', alt: 'Sportiro Polo', size: 'w-12 h-12 md:w-48 md:h-48' },
+  { src: '/Gemini_Generated_Image_5cns1l5cns1l5cns.png', alt: 'Sportiro Cap', size: 'w-10 h-10 md:w-40 md:h-40' },
+  { src: '/Gemini_Generated_Image_k25z7ok25z7ok25z.png', alt: 'Sportiro Tote Bag', size: 'w-12 h-12 md:w-44 md:h-44' },
 ];
 
 // Ribbon positions for merchandise (following a diagonal flowing line, but kept away from center)
 const MERCH_POSITIONS = [
-  { x: -38, y: 35, z: -200, rotation: -15 }, // Bottom left
-  { x: -32, y: -25, z: 100, rotation: 10 },  // Top left
-  { x: 35, y: -30, z: -50, rotation: -5 },   // Top right
-  { x: 32, y: 15, z: 150, rotation: 15 },    // Middle right
-  { x: 0, y: 22, z: 100, rotation: -5 },     // Bottom Center (Directly under buttons)
+  { x: -42, y: 38, z: -200, rotation: -15 }, // Bottom left — pushed further out
+  { x: -38, y: -30, z: 100, rotation: 10 },  // Top left — pushed further out
+  { x: 40, y: -32, z: -50, rotation: -5 },   // Top right — pushed further out
+  { x: 38, y: 18, z: 150, rotation: 15 },    // Middle right — pushed further out
+  { x: 0, y: 32, z: 100, rotation: -5 },     // Bottom Center — pushed below buttons
 ];
 
 interface HeroProps {
@@ -247,7 +247,7 @@ const Hero = ({ introComplete, onOpenQuestionnaire, onRequestCallback }: HeroPro
   return (
     <section
       ref={heroRef}
-      className="relative w-full min-h-[85vh] md:min-h-[120vh] overflow-hidden"
+      className="relative w-full min-h-[70vh] md:min-h-[120vh] overflow-hidden"
       style={{ backgroundColor: 'var(--warm-cream)' }}
     >
       {/* Side glow effects */}
@@ -275,16 +275,16 @@ const Hero = ({ introComplete, onOpenQuestionnaire, onRequestCallback }: HeroPro
 
 
       {/* ── MOBILE LAYOUT ── */}
-      <div className="md:hidden relative z-20 flex flex-col items-center justify-start pt-6 px-5 pb-8" style={{ minHeight: '85vh' }}>
+      <div className="md:hidden relative z-20 flex flex-col items-center justify-start pt-2 px-5 pb-4" style={{ minHeight: '75vh' }}>
         <img
           src="/backgroundnew.png"
           alt="Sportiro"
-          className="w-full max-w-[280px] object-contain relative z-10"
+          className="w-full max-w-[260px] object-contain relative z-10"
           style={{ 
             opacity: introComplete ? 1 : 0, 
             transition: 'opacity 0.8s ease',
-            marginTop: '-60px',
-            marginBottom: '-45px'
+            marginTop: '-70px',
+            marginBottom: '-55px'
           }}
         />
         <p
@@ -294,13 +294,13 @@ const Hero = ({ introComplete, onOpenQuestionnaire, onRequestCallback }: HeroPro
             textShadow: '0 2px 10px rgba(255,255,255,0.8)',
             opacity: introComplete ? 1 : 0,
             transition: 'opacity 0.8s ease 0.2s',
-            marginBottom: '15px'
+            marginBottom: '10px'
           }}
         >
           {heroConfig.subtitle}
         </p>
         <div
-          className="flex flex-col gap-3 w-full max-w-[280px] relative z-20"
+          className="flex flex-col gap-2 w-full max-w-[280px] relative z-20"
           style={{ opacity: introComplete ? 1 : 0, transition: 'opacity 0.8s ease 0.4s' }}
         >
           <button
@@ -405,7 +405,7 @@ const Hero = ({ introComplete, onOpenQuestionnaire, onRequestCallback }: HeroPro
       {/* 3D Perspective container for merchandise */}
       <div
         ref={merchContainerRef}
-        className="absolute inset-0 z-10 pointer-events-none"
+        className="absolute inset-0 z-5 pointer-events-none"
         style={{ perspective: '1200px', perspectiveOrigin: '50% 50%' }}
       >
         {MERCH_ITEMS.map((item, i) => (
