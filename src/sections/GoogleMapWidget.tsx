@@ -226,7 +226,7 @@ const GoogleMapWidget = () => {
                     }}
                     placeholder="Inizia a digitare..."
                     className="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:border-transparent transition-all placeholder:text-gray-300"
-                    style={{ focusRingColor: 'var(--sportiro-blue)' }}
+                    style={{}}
                   />
                   {loadingSuggestions && (
                     <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 animate-spin" />
