@@ -276,33 +276,32 @@ const Hero = ({ introComplete, onOpenQuestionnaire, onRequestCallback }: HeroPro
 
 
       {/* ── MOBILE LAYOUT ── */}
-      <div className="md:hidden relative z-20 flex flex-col items-center justify-start pt-6 px-5" style={{ height: '100svh' }}>
+      <div className="md:hidden relative z-20 flex flex-col items-center justify-start pt-0 px-5" style={{ height: '100svh' }}>
         <img
           src="/backgroundnew.png"
           alt="Sportiro"
-          className="w-full max-w-[260px] object-contain"
+          className="w-full max-w-[280px] object-contain relative z-10"
           style={{ 
             opacity: introComplete ? 1 : 0, 
             transition: 'opacity 0.8s ease',
-            marginTop: '-15px',
-            marginBottom: '0px'
+            marginTop: '-60px',
+            marginBottom: '-45px'
           }}
         />
         <p
-          className="text-sm max-w-[300px] mx-auto leading-relaxed text-center font-bold"
+          className="text-sm max-w-[300px] mx-auto leading-relaxed text-center font-bold relative z-20"
           style={{
             color: '#0a1f5c',
             textShadow: '0 2px 10px rgba(255,255,255,0.8)',
             opacity: introComplete ? 1 : 0,
             transition: 'opacity 0.8s ease 0.2s',
-            marginTop: '-15px',
-            marginBottom: '20px'
+            marginBottom: '15px'
           }}
         >
           {heroConfig.subtitle}
         </p>
         <div
-          className="flex flex-col gap-4 w-full max-w-[280px]"
+          className="flex flex-col gap-3 w-full max-w-[280px] relative z-20"
           style={{ opacity: introComplete ? 1 : 0, transition: 'opacity 0.8s ease 0.4s' }}
         >
           <button
