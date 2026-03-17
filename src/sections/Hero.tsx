@@ -29,7 +29,7 @@ const MERCH_POSITIONS = [
   { x: -32, y: -25, z:  100, rotation:  10, mox: -38, moy: -30 }, // Hoodie   (unchanged)
   { x:  35, y: -30, z:  -50, rotation:  -5, mox:  40, moy: -32 }, // Polo     (unchanged)
   { x:  32, y:  -2, z:  150, rotation:  15, mox:  38, moy: -20 }, // Cap      (50% rollback)
-  { x:   5, y:   6, z:  100, rotation:  -5, mox:   8, moy: -12 }, // Tote Bag (50% rollback)
+  { x:   5, y:  18, z:  100, rotation:  -5, mox:   8, moy: -12 }, // Tote Bag (lowered on desktop)
 ];
 
 interface HeroProps {

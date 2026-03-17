@@ -14,10 +14,13 @@ const STEPS = [
 ];
 
 const ProcessMap = () => {
-  const sectionRef   = useRef<HTMLDivElement>(null);
-  const lineRefs     = useRef<(HTMLDivElement | null)[]>([]);
-  const circleRefs   = useRef<(HTMLDivElement | null)[]>([]);
-  const labelRefs    = useRef<(HTMLDivElement | null)[]>([]);
+  const sectionRef       = useRef<HTMLDivElement>(null);
+  const lineRefs         = useRef<(HTMLDivElement | null)[]>([]);
+  const circleRefs       = useRef<(HTMLDivElement | null)[]>([]);
+  const labelRefs        = useRef<(HTMLDivElement | null)[]>([]);
+  const mobCircleRefs    = useRef<(HTMLDivElement | null)[]>([]);
+  const mobLabelRefs     = useRef<(HTMLDivElement | null)[]>([]);
+  const mobLineRefs      = useRef<(HTMLDivElement | null)[]>([]);
 
   useEffect(() => {
     if (!sectionRef.current) return;
@@ -64,7 +67,48 @@ const ProcessMap = () => {
       });
     }, sectionRef);
 
-    return () => ctx.revert();
+    // Mobile animation — same staggered reveal, vertical direction
+    const mobCtx = gsap.context(() => {
+      mobCircleRefs.current.forEach(el => {
+        if (el) gsap.set(el, { scale: 0, opacity: 0 });
+      });
+      mobLabelRefs.current.forEach(el => {
+        if (el) gsap.set(el, { opacity: 0, x: 20 });
+      });
+      mobLineRefs.current.forEach(el => {
+        if (el) gsap.set(el, { scaleY: 0, transformOrigin: 'top center' });
+      });
+
+      const mobTl = gsap.timeline({
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: 'top 65%',
+          end: 'bottom 75%',
+          scrub: false,
+        },
+      });
+
+      STEPS.forEach((_, i) => {
+        const circle = mobCircleRefs.current[i];
+        const label  = mobLabelRefs.current[i];
+        const line   = mobLineRefs.current[i];
+
+        if (circle) {
+          mobTl.to(circle, { scale: 1, opacity: 1, duration: 0.35, ease: 'back.out(1.8)' }, i === 0 ? 0 : undefined);
+        }
+        if (label) {
+          mobTl.to(label, { opacity: 1, x: 0, duration: 0.3, ease: 'power2.out' }, '<0.1');
+        }
+        if (line) {
+          mobTl.to(line, { scaleY: 1, duration: 0.4, ease: 'power2.inOut' }, '<0.15');
+        }
+      });
+    }, sectionRef);
+
+    return () => {
+      ctx.revert();
+      mobCtx.revert();
+    };
   }, []);
 
   return (
@@ -173,6 +217,7 @@ const ProcessMap = () => {
             <div key={step.num} className="flex items-stretch gap-4">
               <div className="flex flex-col items-center flex-shrink-0" style={{ width: 64 }}>
                 <div
+                  ref={el => { mobCircleRefs.current[i] = el; }}
                   className="relative flex items-center justify-center rounded-full border-4 shadow-lg flex-shrink-0"
                   style={{ width: 64, height: 64, backgroundColor: '#FFFFFF', borderColor: 'rgba(255,255,255,0.6)' }}
                 >
@@ -186,12 +231,16 @@ const ProcessMap = () => {
                 </div>
                 {i < STEPS.length - 1 && (
                   <div
+                    ref={el => { mobLineRefs.current[i] = el; }}
                     className="flex-1 my-2"
                     style={{ width: 3, backgroundColor: 'rgba(255,255,255,0.5)', borderRadius: 2, minHeight: 32 }}
                   />
                 )}
               </div>
-              <div className="pb-8 pt-2">
+              <div
+                ref={el => { mobLabelRefs.current[i] = el; }}
+                className="pb-8 pt-2"
+              >
                 <p className="font-bold text-sm" style={{ color: '#FFFFFF' }}>{step.label}</p>
                 <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.75)' }}>{step.desc}</p>
               </div>

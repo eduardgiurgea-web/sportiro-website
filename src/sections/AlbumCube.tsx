@@ -199,8 +199,8 @@ const AlbumCube = () => {
   const titleRef = useRef<HTMLDivElement>(null);
   const [rotationProgress, setRotationProgress] = useState(0);
   const [currentAlbumIndex, setCurrentAlbumIndex] = useState(0);
-  const [blurAmount, setBlurAmount] = useState(0);
-  const [letterSpacing, setLetterSpacing] = useState(0);
+  const blurRef = useRef(0);
+  const spacingRef = useRef(0);
   const [isMobile, setIsMobile] = useState(false);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [isHovered, setIsHovered] = useState(false);
@@ -225,6 +225,8 @@ const AlbumCube = () => {
       scrub: isMobile ? 0.8 : 1.5,
       pin: true,
       anticipatePin: 1,
+      fastScrollEnd: true,
+      preventOverlaps: true,
       onUpdate: (self) => {
         const progress = self.progress;
         setRotationProgress(progress);
@@ -235,12 +237,18 @@ const AlbumCube = () => {
         );
         setCurrentAlbumIndex(albumIndex);
 
+        // Use refs + direct DOM updates for blur/spacing to avoid re-renders
         const velocity = Math.abs(self.getVelocity());
         const targetBlur = Math.min(velocity / 600, isMobile ? 3 : 5);
         const targetSpacing = Math.min(velocity / 150, isMobile ? 10 : 20);
 
-        setBlurAmount(prev => prev + (targetBlur - prev) * 0.15);
-        setLetterSpacing(prev => prev + (targetSpacing - prev) * 0.15);
+        blurRef.current += (targetBlur - blurRef.current) * 0.15;
+        spacingRef.current += (targetSpacing - spacingRef.current) * 0.15;
+
+        if (titleRef.current) {
+          titleRef.current.style.filter = `blur(${blurRef.current}px)`;
+          titleRef.current.style.letterSpacing = `${spacingRef.current}px`;
+        }
       },
     });
 
@@ -279,10 +287,6 @@ const AlbumCube = () => {
       <div
         ref={titleRef}
         className="absolute inset-0 flex items-center justify-center pointer-events-none z-0"
-        style={{
-          filter: `blur(${blurAmount}px)`,
-          letterSpacing: `${letterSpacing}px`,
-        }}
       >
         <h2 
           className="font-serif text-[22vw] md:text-[16vw] uppercase whitespace-nowrap select-none"
