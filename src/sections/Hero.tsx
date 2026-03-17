@@ -118,13 +118,12 @@ const Hero = ({ introComplete, onOpenQuestionnaire, onRequestCallback }: HeroPro
         const pos = MERCH_POSITIONS[i];
 
         const isMob = window.innerWidth < 768;
-        // Pushing items further to the sides on mobile to clear the center text area
-        const xOffset = isMob ? (pos.x > 0 ? 45 : -45) : (pos.x > 0 ? 1 : -1) * 40;
-        const yOffset = isMob ? (pos.y > 0 ? 10 : -10) : -30;
-
+        // Positioning extreme edges on mobile
+        const xOffset = isMob ? (pos.x > 0 ? 40 : -40) : (pos.x > 0 ? 1 : -1) * 40;
+        
         gsap.to(item, {
           x: isMob ? `${xOffset}vw` : `+=${xOffset}`,
-          y: isMob ? `${pos.y + (yOffset/10)}vh` : `-=30`,
+          y: isMob ? `${pos.y > 0 ? 35 : -35}vh` : `-=30`,
           duration: gsap.utils.random(4, 7),
           repeat: -1,
           yoyo: true,
@@ -248,7 +247,7 @@ const Hero = ({ introComplete, onOpenQuestionnaire, onRequestCallback }: HeroPro
   return (
     <section
       ref={heroRef}
-      className="relative w-full min-h-[100svh] md:min-h-[120vh] overflow-hidden"
+      className="relative w-full min-h-[85vh] md:min-h-[120vh] overflow-hidden"
       style={{ backgroundColor: 'var(--warm-cream)' }}
     >
       {/* Side glow effects */}
@@ -276,7 +275,7 @@ const Hero = ({ introComplete, onOpenQuestionnaire, onRequestCallback }: HeroPro
 
 
       {/* ── MOBILE LAYOUT ── */}
-      <div className="md:hidden relative z-20 flex flex-col items-center justify-start pt-0 px-5" style={{ height: '100svh' }}>
+      <div className="md:hidden relative z-20 flex flex-col items-center justify-start pt-6 px-5 pb-8" style={{ minHeight: '85vh' }}>
         <img
           src="/backgroundnew.png"
           alt="Sportiro"
