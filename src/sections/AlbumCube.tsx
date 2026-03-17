@@ -103,7 +103,7 @@ const PuzzleCube = ({ rotationProgress, isMobile, mousePos, currentAlbumIndex }:
     // 2. Assembly Animation via ScrollTrigger
     const st = ScrollTrigger.create({
       trigger: '#albums',
-      start: 'top 70%', // Start when section is halfway into view
+      start: 'top 95%', // Fire as section enters from below, before it pins
       once: true,
       onEnter: () => {
         // Animate all pieces to their target positions (forming the main cube)
@@ -220,10 +220,11 @@ const AlbumCube = () => {
 
     const st = ScrollTrigger.create({
       trigger: sectionRef.current,
-      start: 'top 40%',
-      end: isMobile ? '+=80%' : '+=250%',
+      start: 'top top',
+      end: isMobile ? '+=250%' : '+=350%',
       scrub: isMobile ? 0.8 : 1.5,
-      pin: false, // Never pin on mobile to avoid scroll-hijacking/blocks
+      pin: true,
+      anticipatePin: 1,
       onUpdate: (self) => {
         const progress = self.progress;
         setRotationProgress(progress);
@@ -256,7 +257,7 @@ const AlbumCube = () => {
     <section
       id="albums"
       ref={sectionRef}
-      className={`relative w-full ${isMobile ? 'h-[65vh]' : 'h-screen'} overflow-hidden z-10`}
+      className="relative w-full h-[100svh] overflow-hidden z-10"
       style={{ backgroundColor: '#f0ede6' /* Updated warm beige */ }}
       onPointerMove={(e) => {
         if (isMobile) return;

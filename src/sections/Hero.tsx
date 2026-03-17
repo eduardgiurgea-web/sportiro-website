@@ -22,13 +22,14 @@ const MERCH_ITEMS = [
   { src: '/Gemini_Generated_Image_k25z7ok25z7ok25z.png', alt: 'Sportiro Tote Bag', size: 'w-16 h-16 md:w-44 md:h-44' },
 ];
 
-// Ribbon positions for merchandise (following a diagonal flowing line, but kept away from center)
+// Ribbon positions for merchandise
+// mox/moy = explicit mobile orbit destinations (vw/vh from center)
 const MERCH_POSITIONS = [
-  { x: -38, y: -15, z: -200, rotation: -15 }, // Upper left (T-Shirt)
-  { x: -32, y: -25, z: 100, rotation: 10 },   // Top left (Hoodie)
-  { x: 35, y: -30, z: -50, rotation: -5 },    // Top right (Polo)
-  { x: 32, y: -18, z: 150, rotation: 15 },    // Upper right (Cap)
-  { x: 5, y: -10, z: 100, rotation: -5 },     // Upper center-right (Tote Bag)
+  { x: -38, y: 10,  z: -200, rotation: -15, mox: -42, moy: -14 }, // T-Shirt  (50% rollback)
+  { x: -32, y: -25, z:  100, rotation:  10, mox: -38, moy: -30 }, // Hoodie   (unchanged)
+  { x:  35, y: -30, z:  -50, rotation:  -5, mox:  40, moy: -32 }, // Polo     (unchanged)
+  { x:  32, y:  -2, z:  150, rotation:  15, mox:  38, moy: -20 }, // Cap      (50% rollback)
+  { x:   5, y:   6, z:  100, rotation:  -5, mox:   8, moy: -12 }, // Tote Bag (50% rollback)
 ];
 
 interface HeroProps {
@@ -128,12 +129,11 @@ const Hero = ({ introComplete, onOpenQuestionnaire, onRequestCallback }: HeroPro
         const pos = MERCH_POSITIONS[i];
 
         const isMob = window.innerWidth < 768;
-        // Positioning extreme edges on mobile
-        const xOffset = isMob ? (pos.x > 0 ? 40 : -40) : (pos.x > 0 ? 1 : -1) * 40;
-        
+        const deskXOffset = (pos.x > 0 ? 1 : -1) * 40;
+
         gsap.to(item, {
-          x: isMob ? `${xOffset}vw` : `+=${xOffset}`,
-          y: isMob ? `${Math.min(pos.y - 8, -10)}vh` : `-=30`,
+          x: isMob ? `${pos.mox}vw` : `+=${deskXOffset}`,
+          y: isMob ? `${pos.moy}vh` : `-=30`,
           duration: gsap.utils.random(4, 7),
           repeat: -1,
           yoyo: true,
@@ -141,14 +141,16 @@ const Hero = ({ introComplete, onOpenQuestionnaire, onRequestCallback }: HeroPro
           delay: i * 0.3,
         });
 
-        gsap.to(item, {
-          y: `+=${gsap.utils.random(15, 28)}`,
-          duration: gsap.utils.random(2.5, 4),
-          repeat: -1,
-          yoyo: true,
-          ease: 'sine.inOut',
-          delay: i * 0.5,
-        });
+        if (!isMob) {
+          gsap.to(item, {
+            y: `+=${gsap.utils.random(15, 28)}`,
+            duration: gsap.utils.random(2.5, 4),
+            repeat: -1,
+            yoyo: true,
+            ease: 'sine.inOut',
+            delay: i * 0.5,
+          });
+        }
 
         gsap.to(item, {
           rotation: pos.rotation + gsap.utils.random(-6, 6),
@@ -285,7 +287,7 @@ const Hero = ({ introComplete, onOpenQuestionnaire, onRequestCallback }: HeroPro
 
 
       {/* ── MOBILE LAYOUT ── */}
-      <div className="md:hidden relative z-20 flex flex-col items-center justify-start pt-20 px-5 pb-6" style={{ minHeight: '100svh' }}>
+      <div className="md:hidden relative z-20 flex flex-col items-center justify-between pt-12 pb-8 px-5" style={{ height: '100svh' }}>
         <img
           src="/backgroundnew.png"
           alt="Sportiro"
@@ -293,7 +295,6 @@ const Hero = ({ introComplete, onOpenQuestionnaire, onRequestCallback }: HeroPro
           style={{
             opacity: introComplete ? 1 : 0,
             transition: 'opacity 0.8s ease',
-            marginBottom: '2px'
           }}
         />
         <p
@@ -303,7 +304,6 @@ const Hero = ({ introComplete, onOpenQuestionnaire, onRequestCallback }: HeroPro
             textShadow: '0 2px 10px rgba(255,255,255,0.8)',
             opacity: introComplete ? 1 : 0,
             transition: 'opacity 0.8s ease 0.2s',
-            marginBottom: '10px'
           }}
         >
           {heroConfig.subtitle}
